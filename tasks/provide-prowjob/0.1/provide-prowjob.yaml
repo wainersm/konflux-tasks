@@ -51,6 +51,10 @@ spec:
     description: 'Time in seconds to wait between retry attempts'
     type: string
     default: "60"
+  - name: IGNORE_PROWJOB_ERROR
+    type: string
+    default: "false"
+    description: 'If "true", task exits successfully even when prowjob fails, allowing pipeline to continue'
   results:
   - name: PROWJOB_ID
     description: The triggered prowjob id
@@ -251,6 +255,8 @@ spec:
         secretKeyRef:
           name: $(params.GANGWAY_TOKEN)
           key: token
+    - name: IGNORE_PROWJOB_ERROR
+      value: $(params.IGNORE_PROWJOB_ERROR)
     script: |
       #!/usr/bin/env bash
       set -o pipefail
@@ -282,7 +288,13 @@ spec:
           PROWJOB_STATUS="$STATUS"
           echo "❌ "
           echo "${PROWJOB_STATUS}" | tee $(results.PROWJOB_STATUS.path)
-          exit 1
+
+          if [ "$IGNORE_PROWJOB_ERROR" == "true" ]; then
+            echo "⚠️  Task continuing despite prowjob failure (IGNORE_PROWJOB_ERROR=true)"
+            exit 0
+          else
+            exit 1
+          fi
         fi
         sleep 60
       done

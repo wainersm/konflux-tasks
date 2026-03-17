@@ -39,6 +39,7 @@ The pipeline consists of the following tasks:
 | ENVS | Comma-separated list of additional environment variables to pass to the prowjob, e.g. TEST_ENV=example,ANOTHER_ENV=example2 |  | false |
 | MAX_RETRIES | Maximum number of retries to trigger the prowjob | 5 | false |
 | RETRY_DELAY | Time in seconds to wait between retry attempts | 60 | false |
+| IGNORE_PROWJOB_ERROR | If "true", task exits successfully even when prowjob fails, allowing pipeline to continue | false | false |
 
 ## ⚙️ How It Works
 Patch ci-operator Config:
